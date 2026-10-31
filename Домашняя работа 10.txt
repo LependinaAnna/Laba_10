@@ -1,0 +1,320 @@
+Домашнее задание. Фигуры:  
+Условие задачи. Составьте программу, которая для заданной пользователем фигуры, например (прямоугольника, треугольника, трапеции, квадрата и круга) предлагает меню выбора одной из операций:
+1) рассчитать площадь;
+2) вывести определение фигуры;
+3) нарисовать фигуру.                                                                                               
+Для каждой из операций и фигур реализуйте одну собственную функцию вычисления площади с необходимым числом параметров, например :
+float area_round(float a); // для круга
+float area_rectangle(float a, float b); // для прямоугольника
+float area_triangle(float a, float b, float c); // для треугольника
+и рисования  фигуры символом '*' (размеры сторон фигуры пользователь задает в main):
+void draw_rectangle(int a, int b);
+или рисования  фигуры (вид символа пользователь задает в main):
+void draw_round(char a);
+Для вывода параметров фигуры: 
+int get_radius(int a); // возвращает радиус круга
+Для сравнения двух фигур по площади
+int compare_round(int a, int b)// возвращает разницу между двумя кругами с радиусами a и b.
+
+1. Алгоритм.
+Начало 
+Определить и ввести константы:
+1) figure - какое-либо целое число от 0 до 6
+2) operation - какое-либо целое число от 1 до 3
+3) r1 - какое-либо целое число, радиус первого круга 
+4) r2 - какое-либо целое число, радиус второго круга
+5) a - какое-либо целое число (используется в формулах для разных фигур)
+6) b - какое-либо целое число (используется в формулах для разных фигур)
+7) c - какое-либо целое число (используется в формулах для разных фигур)
+8) h - какое-либо целое число (используется в формулах для разных фигур)
+9) R - какое-либо целое число, радиус круга
+10) symbol - какой-либо символ с клавиатуры
+11) p - полупериметр треугольника
+12) s1 - площадь первого круга
+13) s2 - площадь второго круга
+14) figure_type - какое-либо целое число от 1 до 5
+Учитывая введённые данные, выполнить программу.
+Пока figure не станет равным нулю, продолжать программу.
+Если figure равен нулю, завершить программу.
+Вывести результат.
+Конец
+
+2. Блок-схема алгоритма. Ссылка: в draw.io^ https://drive.google.com/file/d/10uj8XDrL99TV11qXNqC4wAKjQQgyuQEd/view?usp=sharing
+
+3. Реализация программы.
+#define _CRT_SECURE_NO_DEPRECATE
+#define _USE_MATH_DEFINES 
+#include <locale.h>
+#include <stdio.h>
+#include <math.h>
+#include <string.h>
+#include <ctype.h>
+#include <stdlib.h>
+#define M_PI 3.14159265358979323846
+
+float area_round(float r);
+float area_rectangle(float a, float b);
+float area_triangle(float a, float b, float c);
+float area_trapezoid(float a, float b, float h);
+float area_square(float a);
+void print_definition(int figure_type);
+void draw_rectangle(int a, int b);
+void draw_square(int a);
+void draw_triangle(int h);
+void draw_trapezoid(int a, int b, int h);
+void draw_round(char sym);
+int get_radius(int r);
+int compare_round(int r1, int r2);
+
+int main() 
+{
+    setlocale(LC_ALL, "RUS");
+    
+    int figure, operation;
+    while (1) 
+    {
+        puts("\n---- ГЛАВНОЕ МЕНЮ ----");
+        puts("0. Выход");
+        puts("1. Прямоугольник");
+        puts("2. Треугольник");
+        puts("3. Трапеция");
+        puts("4. Квадрат");
+        puts("5. Круг");
+        puts("6. Сравнить два круга по площади");
+        puts("Ваш выбор");
+        scanf("%d", &figure);
+        if (figure == 0) break;
+        if (figure == 6) 
+        {
+            puts("\n--- Сравнение площадей двух кругов ---");
+            int r1, r2, r, different;
+            puts("Введите радиус первого круга (целое число)");
+            scanf("%d", &r1);
+            r1 = get_radius(r1);
+            puts("Введите радиус второго круга (целое число)");
+            scanf("%d", &r2);
+            r2 = get_radius(r2);
+            different = compare_round(r1, r2);
+            printf("Разница между площадями (округленная до целого): %d ед.^2\n", different);
+            continue;
+        }
+        puts("\n--- ВЫБЕРИТЕ ОПЕРАЦИЮ ---");
+        puts("1. Рассчитать площадь фигуры");
+        puts("2. Вывести определение фигуры");
+        puts("3. Нарисовать фигуру");
+        puts("Ваш выбор");
+        scanf("%d", &operation);
+        switch (operation) 
+        {
+            case 1: 
+            { 
+                if (figure == 1) 
+                {
+                    float a, b, res_area_rectangle;
+                    puts("Введите стороны прямоугольника (a b)");
+                    scanf("%f %f", &a, &b);
+                    res_area_rectangle = area_rectangle(a, b);
+                    printf("Площадь прямоугольника: %.2f ед.^2\n",  res_area_rectangle);
+                } 
+                else if (figure == 2) 
+                {
+                    float a, b, c, res_area_triangle;
+                    puts("Введите 3 стороны треугольника (a b c)");
+                    scanf("%f %f %f", &a, &b, &c);
+                    res_area_triangle = area_triangle(a, b, c);
+                    if (res_area_triangle > 0) printf("Площадь треугольника: %.2f ед.^2\n", res_area_triangle);
+                } 
+                else if (figure == 3) 
+                {
+                    float a, b, h, res_area_trapezoid;
+                    puts("Введите основания и высоту трапеции (a b h)");
+                    scanf("%f %f %f", &a, &b, &h);
+                    res_area_trapezoid = area_trapezoid(a, b, h);
+                    printf("Площадь трапеции: %.2f ед.^2\n", res_area_trapezoid);
+                } 
+                else if (figure == 4) 
+                {
+                    float a, res_area_square;
+                    puts("Введите сторону квадрата");
+                    scanf("%f", &a);
+                    res_area_square = area_square(a);
+                    printf("Площадь квадрата: %.2f ед.^2\n", res_area_square);
+                } 
+                else if (figure == 5) 
+                {
+                    int r, R; 
+                    float res_area_round;
+                    puts("Введите радиус круга");
+                    scanf("%d", &r);
+                    R = get_radius(r);
+                    res_area_round = area_round((float)R);
+                    printf("Площадь круга: %.2f ед.^2\n", res_area_round);
+                }
+                continue;
+            }
+            case 2: 
+                print_definition(figure);
+                continue;
+            case 3: 
+            { 
+                if (figure == 1) 
+                {
+                    int a, b;
+                    puts("Введите размеры прямоугольника целыми числами (ширина высота)");
+                    scanf("%d %d", &a, &b);
+                    draw_rectangle(a, b);
+                } 
+                else if (figure == 2) 
+                {
+                    int h;
+                    puts("Введите высоту треугольника");
+                    scanf("%d", &h);
+                    draw_triangle(h);
+                } 
+                else if (figure == 3) 
+                {
+                    int a, b, h;
+                    puts("Введите целые размеры трапеции (верхнее основание нижнее основание высота)");
+                    scanf("%d %d %d", &a, &b, &h);
+                    draw_trapezoid(a, b, h);
+                } 
+                else if (figure == 4) 
+                {
+                    int a;
+                    puts("Введите сторону квадрата");
+                    scanf("%d", &a);
+                    draw_square(a);
+                } 
+                else if (figure == 5) 
+                {
+                    char symbol;
+                    puts("Введите символ, которым хотите нарисовать круг");
+                    scanf(" %c", &symbol);
+                    draw_round(symbol);
+                }
+                continue;
+            }
+            default:
+                printf("Неизвестная операция.\n");
+                continue;
+        }
+    }
+
+    puts("\nПрограмма завершена.");
+    return 0;
+}
+
+float area_round(float r) 
+{
+    return (float)M_PI * pow(r, 2.0);
+}
+
+float area_rectangle(float a, float b) 
+{
+    return a * b;
+}
+
+float area_triangle(float a, float b, float c) 
+{
+    if (a + b <= c || a + c <= b || b + c <= a) 
+    {
+        printf("Ошибка: треугольник с такими сторонами не существует!\n");
+        return -1;
+    }
+    float p = (a + b + c) / 2.0f;
+    return sqrtf(p * (p - a) * (p - b) * (p - c));
+}
+
+float area_trapezoid(float a, float b, float h) 
+{
+    return ((a + b) / 2.0f) * h;
+}
+
+float area_square(float a) 
+{
+    return pow(a, 2.0);
+}
+
+void print_definition(int figure_type) 
+{
+    printf("Определение: ");
+    if (figure_type == 1) puts("Прямоугольник — это четырехугольник, у которого все углы прямые, а стороны попарно равны");
+    else if (figure_type == 2) puts("Треугольник — это геометрическая фигура, образованная тремя отрезками, соединяющими три точки, не лежащие на одной прямой.");
+    else if (figure_type == 3) puts("Трапеция — это четырехугольник, у которого две стороны параллельны, а две другие не параллельны.");
+    else if (figure_type == 4) puts("Квадрат — это правильный четырехугольник, у которого все стороны и углы равны.");
+    else if (figure_type == 5) puts("Круг — это часть плоскости, ограниченная окружностью.");
+}
+
+void draw_rectangle(int a, int b) 
+{
+    printf("\n");
+    for (int i = 0; i < b; i++) 
+    {
+        for (int j = 0; j < a; j++) 
+        {
+            printf("* ");
+        }
+        printf("\n");
+    }
+}
+
+void draw_square(int a) 
+{
+    draw_rectangle(a, a);
+}
+
+void draw_triangle(int h) 
+{
+    printf("\n");
+    for (int i = 1; i <= h; i++) 
+    {
+        for (int j = 0; j < i; j++) 
+        {
+            printf("* ");
+        }
+        printf("\n");
+    }
+}
+
+void draw_trapezoid(int a, int b, int h) 
+{
+    printf("\n");
+    for (int i = 0; i < h; i++) 
+    {
+        int c_width = a + (i * (b - a)) / (h > 1 ? h - 1 : 1);
+        for (int j = 0; j < c_width; j++) 
+        {
+            printf("* ");
+        }
+        printf("\n");
+    }
+}
+
+void draw_round(char symbol)
+{
+    int r = 4;
+    printf("\n");
+    for (int i = -r; i <= r; i++) 
+    {
+        for (int j = -r; j <= r; j++) 
+        {
+            if (i*i + j*j <= r*r) printf("%c ", symbol);
+            else printf("  ");
+        }
+        printf("\n");
+    }
+}
+
+int get_radius(int r) 
+{
+    return r;
+}
+
+int compare_round(int r1, int r2) 
+{
+    float s1 = area_round((float)r1);
+    float s2 = area_round((float)r2);
+    return (int)fabsf(s1 - s2);
+}
+
+4. Информация о разработчике: Лепендина Анна группа бИД-261 

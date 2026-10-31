@@ -1,0 +1,223 @@
+#define _CRT_SECURE_NO_DEPRECATE
+#define _USE_MATH_DEFINES 
+#include <locale.h>
+#include <stdio.h>
+#include <math.h>
+#include <string.h>
+#include <ctype.h>
+#include <stdlib.h>
+#define M_PI 3.14159265358979323846
+
+double fa(double X);
+double fb(double X);
+double sin_n(double x, int N);
+double sin_eps(double x, double eps);
+double arcsin_n(double x_6, int N_6);
+double arcsin_eps(double x_6, double eps_6);
+
+int main() 
+{
+    setlocale(LC_ALL, "RUS");
+    
+    double X, res_a, res_b;
+    int menu;
+    puts("Введите значение x");
+    scanf("%lf", &X);
+    res_a = fa(X);
+    res_b = fb(X);
+    while (1) 
+    {
+        puts("\n----- МЕНЮ ВЫБОРА РАСЧЁТА -----");
+        puts("0. Выход из программы");
+        puts("1. Показать значение функции fa(x)");
+        puts("2. Показать значение функции fb(x)");
+        puts("3. Рассчитать произведение функций");
+        puts("4. Рассчитать разность квадратов функций");
+        puts("5. Рассчитать удвоенную сумму функций");
+        puts("Ваш выбор");
+        scanf("%d", &menu);
+        if (menu == 0) break;
+        printf("Результат: ");
+        switch (menu) 
+        {
+            case 1:
+                printf("Значение функции fa(x) = %lf\n", res_a);
+                break;
+            case 2:
+                printf("Значение функции fb(x) = %lf\n", res_b);
+                break;
+            case 3:
+                printf("Произведение функций = %lf\n", res_a * res_b);
+                break;
+            case 4:
+                printf("Разность квадратов функций = %lf\n", (res_a * res_a) - (res_b * res_b));
+                break;
+            case 5:
+                printf("Удвоенная сумма функций = %lf\n", 2.0 * (res_a + res_b));
+                break;
+            default:
+                printf("Ошибка! Неверный пункт меню. Попробуйте еще раз\n");
+                break;
+        }
+    }
+    puts("Программа завершена\n\n");
+    
+    double x, eps, res_math, c_res, different, res_n, res_eps;
+    int N;
+    puts("---- Вычисление sin(x) тремя способами ----");
+    puts("Введите значение x (в радианах, например, 0.79)");
+    scanf("%lf", &x);
+    puts("Введите количество членов ряда N (N >= 0, например, 10)");
+    scanf("%d", &N);
+    if (N <= 0) 
+    {
+        printf("Ошибка ввода N!\n");
+        return 1;
+    }
+    puts("Введите точность вычислений eps (eps >= 0, например, 1e-6)");
+    scanf("%lf", &eps);
+    if (eps <= 0) 
+    {
+        printf("Ошибка ввода eps!\n");
+        return 1;
+    }
+    res_math = sin(x);
+    printf("\n--- Результаты для x = %.2f ---\n", x);
+    puts(" N  |   sin_N  |   Отклонение");
+    puts("-------------------------------");
+    for (int i = 1; i <= N; i++) 
+    {
+        c_res = sin_n(x, i);
+        different = c_res - res_math;
+        printf("%-3d | %8.4f | %s%.4e\n", i, c_res, (different >= 0 ? "+" : ""), different);
+    }
+    res_n = sin_n(x, N);
+    res_eps = sin_eps(x, eps);
+    puts("\n----- Сравнение результатов -----");
+    printf("%-45s | %-29s | %-15s\n", "    Способ вычисления", "  Результат ", "  Отклонение");
+    puts("---------------------------------------------------------------------");
+    printf("%-40s | %20.7f | %15s\n", "1) Стандартный sin(x)", res_math, "0.0000000000");
+    printf("%-45s | %20.7f | %15.10e\n", "2) Через сумму N членов", res_n, fabs(res_n - res_math));
+    printf("%-42s | %20.7f | %15.10e\n\n\n", "3) Через точность eps", res_eps, fabs(res_eps - res_math));
+    
+    double x_6, eps_6, res_math_6, c_res_6, different_6, res_n_6, res_eps_6;
+    int N_6;
+    puts("--- Вычисление arcsin(x) тремя способами ---");
+    puts("Введите значение x (|x| < 1, в радианах, например, 0.79)");
+    scanf("%lf", &x_6);
+    if (fabs(x_6) >= 1.0) 
+    {
+        printf("Ошибка ввода x!\n");
+        return 1;
+    }
+    puts("Введите количество членов ряда N (N >= 0, например, 10)");
+    scanf("%d", &N_6);
+    if (N_6 <= 0) {
+        printf("Ошибка ввода N!\n");
+        return 1;
+    }
+    puts("Введите точность вычислений eps (eps >= 0, например, 1e-6)");
+    scanf("%lf", &eps_6);
+    if (eps_6 <= 0) 
+    {
+        printf("Ошибка ввода eps!\n");
+        return 1;
+    }
+    res_math_6 = asin(x_6);
+    printf("\n--- Результаты для x = %.2f ---\n", x_6);
+    puts(" N  |   arcsin_N |   Отклонение");
+    puts("--------------------------------");
+    for (int i = 1; i <= N_6; i++) 
+    {
+        c_res_6 = arcsin_n(x_6, i);
+        different_6 = c_res_6 - res_math_6;
+        printf("%-3d | %10.4f | %s%.4e\n", i, c_res_6, (different_6 >= 0 ? "+" : ""), different_6);
+    }
+    res_n_6 = arcsin_n(x_6, N_6);
+    res_eps_6 = arcsin_eps(x_6, eps_6);
+    puts("\n----- Сравнение результатов -----");
+    printf("%-45s | %-29s | %-15s\n", "    Способ вычисления", "  Результат ", "  Отклонение");
+    puts("---------------------------------------------------------------------");
+    printf("%-40s | %20.7f | %15s\n", "1) Стандартный arcsin(x)", res_math_6, "0.0000000000");
+    printf("%-45s | %20.7f | %15.10e\n", "2) Через сумму N членов", res_n_6, fabs(res_n_6 - res_math_6));
+    printf("%-42s | %20.7f | %15.10e\n", "3) Через точность eps", res_eps_6, fabs(res_eps_6 - res_math_6));
+    
+    return 0;
+}
+
+double fa(double X) 
+{
+    double y;
+    if (X <= 3.0) 
+    {
+        y = pow(X, 2.0) - 3.0 * X + 9.0;
+    } 
+    else 
+    {
+        y = 1.0 / (pow(X, 3.0) + 3.0);
+    }
+    return y;
+}
+
+double fb(double X) 
+{
+    double y;
+    y = X * exp(sin(pow(X, 2.0)));
+    return y;
+}
+
+double sin_n(double x, int N) 
+{
+    double sum, terminal; 
+    sum = 0.0;
+    terminal = x;
+    for (int k = 1; k <= N; k++) 
+    {
+        sum += terminal;
+        terminal = terminal * (-x * x) / ((2 * k) * (2 * k + 1));
+    }
+    return sum;
+}
+
+double sin_eps(double x, double eps) 
+{
+    double sum, terminal;
+    sum = 0.0;
+    terminal = x;
+    int k = 1;
+    while (fabs(terminal) > eps) 
+    {
+        sum += terminal;
+        terminal = terminal * (-x * x) / ((2 * k) * (2 * k + 1));
+        k++;
+    }
+    return sum;
+}
+
+double arcsin_n(double x_6, int N_6) 
+{
+    double sum_6, terminal_6; 
+    sum_6 = x_6;
+    terminal_6 = x_6;
+    for (int n = 1; n < N_6; n++) 
+    {
+        terminal_6 = terminal_6 * (x_6 * x_6 * (2 * n - 1) * (2 * n - 1)) / ((2 * n) * (2 * n + 1));
+        sum_6 += terminal_6;
+    }
+    return sum_6;
+}
+
+double arcsin_eps(double x_6, double eps_6) 
+{
+    double sum_6, terminal_6;
+    sum_6 = x_6;
+    terminal_6 = x_6;
+    int n = 1;
+    while (fabs(terminal_6) > eps_6) 
+    {
+        terminal_6 = terminal_6 * (x_6 * x_6 * (2 * n - 1) * (2 * n - 1)) / ((2 * n) * (2 * n + 1));
+        sum_6 += terminal_6;
+        n++;
+    }
+    return sum_6;
+}
